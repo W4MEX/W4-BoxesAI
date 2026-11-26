@@ -1,0 +1,68 @@
+CONSTRUIR W4-BoxesAI MIT | actualizacion 002
+
+La imagen local se etiqueta w4-boxesai:mit-002. Su contexto de construccion
+esta en work/w4-mit-002/context, desde la carpeta que contiene el repositorio.
+Incluye Dockerfile y compiled.tar con los bundles recompilados. Se aplica sobre
+la imagen local w4-boxesai:mit-001 y reemplaza por completo su directorio web.
+Desde la carpeta que contiene el repositorio:
+  docker build --pull=false -t w4-boxesai:mit-002 work/w4-mit-002/context
+
+Build-Image.ps1 con el runtime.tar de 001 reconstruye la base historica.
+No equivale a reconstruir 002. Para cambios de fuente, recompilar primero
+API, web y los modulos de servidor modificados, y auditar los bundles.
+
+CONSTRUIR W4-BoxesAI MIT — actualización 001
+
+Arranque habitual: Start-Local.ps1. Ese comando usa la imagen ya validada.
+Build-Image.ps1 únicamente transforma un runtime.tar auditado en una imagen.
+No debe utilizarse para dar por compilados cambios nuevos de TypeScript.
+
+Evidencia y artefactos de esta entrega
+  ../work/w4-mit-001/build-context/runtime.tar
+  ../outputs/W4-BoxesAI-vNext/updates/001-evidence/
+  runtime-manifests.json: manifiestos exactos de 35 workspaces/raíz de producción.
+  runtime.lock: resolución de producción; bun.lock: monorrepositorio sin workspaces EE.
+  La instalación limpia cambió versiones transitivas respecto de la imagen anterior.
+  dependency-resolution-diff.json conserva los conjuntos agregados y retirados.
+
+Secuencia usada en el entorno Linux de construcción
+  Node 24.22.1, Bun 1.4.4, Deno 2.9.3. procps/ps es obligatorio para el worker.
+  Fuente fijada y modificaciones W4 bajo /usr/src/app.
+  Herramientas/frontend bajo /tmp/w4-web-build.
+  Producción aislada bajo /tmp/w4-clean-runtime.
+  Solo se reutilizan artefactos MIT del motor, worker y bibliotecas de la versión fijada.
+  La imagen oficial se utilizó como entorno de construcción; no es una capa del producto.
+
+  1. Instalar herramientas a partir de los manifiestos y lock del monorrepositorio.
+     El checkout local es parcial; para una compilación integral se necesitan todos
+     los workspaces del commit fijado, incluidos cli/tests-e2e.
+  2. Verificar el backend con deploy/w4/tsconfig.api.json y el frontend con su typecheck.
+  3. Compilar API desde packages/server/api:
+       esbuild src/bootstrap.ts --bundle --platform=node --format=cjs --packages=external
+       --tsconfig=tsconfig.app.json --target=node24 --outfile=dist/w4-bootstrap.cjs
+       --metafile=/tmp/w4-api-metafile.json
+  4. Compilar frontend desde packages/web:
+       W4_WEB_INVENTORY=/tmp/w4-web-modules.json bun run build
+     El plugin w4-distribution-gate rechaza módulos de las dos raíces Enterprise.
+  5. Crear /tmp/w4-clean-runtime con runtime-manifests.json y runtime.lock como bun.lock.
+       bun install --production --frozen-lockfile --ignore-scripts
+     No resolver versiones nuevas silenciosamente en una actualización.
+  6. package-runtime.cjs recorre dependencias de API/worker y copia artefactos MIT.
+     Requiere el inventario anterior en /tmp/w4-runtime-baseline.json para la comparación.
+  7. Copiar licenses/npm-supplemental-notices.json a /tmp/w4-license-exceptions.json.
+       W4_RUNTIME_ROOT=/tmp/w4-clean-runtime node deploy/w4/collect-notices.cjs
+       node deploy/w4/finalize-runtime.cjs
+       python3 deploy/w4/audit-archive.py
+     finalize-runtime conserva main.js.map del motor e incluye Bun, Deno y el módulo nativo isolated-vm de ABI 137.
+     Esos binarios deben corresponder a las versiones/licencias registradas.
+  8. Copiar /tmp/w4-runtime-final.tar como runtime.tar al contexto y ejecutar Build-Image.ps1.
+  9. Validar la imagen resultante con una base de datos desechable, nunca sobre datos reales:
+       test-isolation.cjs, test-flow.cjs, test-templates.cjs y test-browser.py.
+     El flujo debe terminar SUCCEEDED, devolver 42 y sumar una ejecución en analítica.
+ 10. Ejecutar lint-dev, guardar hashes/avisos/resultados, emitir informe numerado y arrancar
+     la imagen comprobada. Los secretos y fixtures de autenticación no forman parte del informe.
+
+Estos scripts describen y permiten repetir el empaquetado de 001; el aprovisionamiento completo
+de un constructor desde cero todavía requiere automatizarse en CI. No se afirma una compilación
+bit a bit reproducible de todo el monorrepositorio.
+

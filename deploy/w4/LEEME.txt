@@ -1,0 +1,63 @@
+W4-BoxesAI — actualización MIT 001
+
+Base: Activepieces 0.93.0, commit dec8e16d4e02ee1fe9a5cdfb1a30c7a03785401b.
+Módulos propios: packages/server/api/src/app/w4.
+Informe de cada actualización: deploy/w4/updates/NNN-*.txt.
+
+Uso local
+  .\deploy\w4\Start-Local.ps1
+  .\deploy\w4\Test-Local.ps1
+
+Abrir http://localhost:8081. Crear una primera cuenta administradora en /sign-up.
+El registro abierto se cierra después de esa primera identidad; los demás usuarios
+entran mediante invitación. Sin SMTP, el administrador puede copiar el enlace.
+ActiveBoxes se conserva en http://localhost:8080.
+
+Funciones W4 disponibles
+  Organizaciones independientes y selector de organización.
+  Proyectos y usuarios, invitaciones, membresías y suspensión.
+  Roles de proyecto Admin, Editor y Viewer aplicados en API y WebSocket.
+  Administrador de organización: administración y analítica.
+  Operador: lectura de todos los proyectos, sin ajustes ni analítica administrativa.
+  Miembro: acceso según su membresía y rol en cada proyecto.
+  Panel de analítica en /impact con ejecuciones reales, filtros y gráfica.
+  Editor y ejecución de flujos; plantillas privadas aisladas por organización.
+
+Datos
+  El stack MIT utiliza w4-boxesai-mit_postgres, _redis y _cache.
+  .env.mit.local se genera con secretos aleatorios y está excluido de Git.
+  Respaldar ese archivo de forma segura junto con los volúmenes.
+  No regenerar AP_ENCRYPTION_KEY: es necesaria para recuperar conexiones.
+  La base anterior de vNext y los datos de ActiveBoxes se conservan separados.
+  No se ha migrado su contenido automáticamente al esquema MIT nuevo.
+
+Distribución
+  Imagen w4-boxesai:mit-002, basada en Node 24.22.1 Debian slim fijado por SHA256.
+  API y frontend recompilados; bibliotecas MIT, worker y motor de la versión fijada.
+  Dependencias de producción instaladas de nuevo, con bloqueo en runtime.lock.
+  No se heredan capas de la imagen oficial de Activepieces.
+  Se excluyen packages/ee, packages/server/api/src/app/ee, ee-embed-sdk,
+  redis-memory-server y la tipografía Sentient. No se usa una clave Enterprise.
+  MIT cubre la base comunitaria y W4; los terceros conservan sus propias licencias.
+  Avisos e inventario: /usr/src/app/THIRD-PARTY-NOTICES.txt y dependency-inventory.json.
+  Bun incorpora bibliotecas LGPL; consultar sus avisos antes de redistribuir binarios.
+
+Reconstruir la base historica 001 y aplicar la actualizacion 002
+  .\deploy\w4\Build-Image.ps1 -RuntimeArchive <ruta-absoluta-a-runtime.tar>
+  Artefacto local: ../work/w4-mit-001/build-context/runtime.tar.
+  Aplicar el contexto de 002 como describe CONSTRUIR.txt antes de iniciar el servicio.
+  Este comando empaqueta un artefacto previamente compilado: no recompila cambios
+  nuevos del código fuente. Consultar CONSTRUIR.txt para la secuencia completa.
+  Dockerfile y compose.local.yaml también apuntan a la distribución MIT.
+  compose.legacy.yaml conserva la referencia al piloto anterior solo para reversión.
+
+Límites de la entrega local
+  No incluye roles personalizados, SSO/SAML/SCIM, auditoría Enterprise, bóvedas
+  externas, claves API de plataforma ni SDK de embedding comercial.
+  Agentes/chat/MCP y reversión histórica de actualizaciones no están disponibles.
+  SMTP y Gmail requieren configuración propia; Gmail necesita cliente OAuth Google.
+  Catálogo de plantillas e importación de flujos anteriores: pendientes de revisión.
+  Antes del servidor: actualización de infraestructura, aislamiento del worker,
+  HTTPS, respaldos/restauración, pruebas de carga y revisión de seguridad.
+  DigitalOcean no se ha contratado ni desplegado.
+

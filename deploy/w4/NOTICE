@@ -1,0 +1,25 @@
+W4-BoxesAI, actualización 001, base Activepieces 0.93.0
+Upstream commit: dec8e16d4e02ee1fe9a5cdfb1a30c7a03785401b
+
+Los módulos propios W4 y la base comunitaria se distribuyen bajo MIT.
+Se conserva el aviso original en LICENSE-ACTIVEPIECES. No se distribuyen
+packages/ee ni packages/server/api/src/app/ee ni artefactos derivados de ellos.
+Los nombres de paquetes @activepieces identifican dependencias upstream;
+W4-BoxesAI no implica patrocinio ni autorización de marca de Activepieces.
+
+Las dependencias de terceros conservan sus licencias. Se elige la alternativa
+MIT de JSZip. Consulte THIRD-PARTY-NOTICES.txt y dependency-inventory.json.
+Inter y JetBrains Mono conservan SIL OFL; Sentient no está incluida.
+
+Node y el sistema Debian conservan sus avisos dentro de la imagen base.
+procps proporciona ps, necesario para supervisar el worker, y conserva sus avisos
+en /usr/share/doc/procps/copyright junto con los de sus bibliotecas del sistema.
+Bun y Deno se ejecutan como programas independientes, sin modificaciones.
+Bun incorpora bibliotecas LGPL; su aviso incluye los enlaces e instrucciones
+para obtener el código correspondiente y reconstruirlo. La licencia MIT de
+W4 no sustituye esas obligaciones al redistribuir binarios. Véase licenses/.
+
+Redis se ejecuta como servicio separado con la imagen BSD 7.0.7. Esta imagen
+de W4 no contiene Redis integrado. PostgreSQL/pgvector conservan sus licencias
+en su propia imagen. Las piezas que se descarguen después de instalar W4
+requieren revisar y conservar sus propios avisos de licencia.

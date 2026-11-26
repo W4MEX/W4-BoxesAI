@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.turbo/
+coverage/
+.env*
+!.env.example
+*.local
+*.tar
+*.tgz
+*.tfstate*
+*.sqlite*
+*.pem
+*.key
+*.pfx
+.terraform/
+__pycache__/
+*.pyc

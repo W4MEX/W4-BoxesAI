@@ -1,0 +1,55 @@
+name: w4-boxesai-mit
+services:
+  app:
+    image: w4-boxesai:mit-006
+    init: true
+    healthcheck:
+      start_period: 20m
+    restart: unless-stopped
+    env_file: .env.mit.local
+    environment:
+      AP_CONTAINER_TYPE: WORKER_AND_APP
+      AP_FRONTEND_URL: http://localhost:${W4_LOCAL_PORT:-8081}
+      AP_POSTGRES_HOST: postgres
+      AP_REDIS_HOST: redis
+      AP_ALLOW_OPEN_SIGN_UP: "false"
+      AP_TOOL_SEARCH_ENABLED: "false"
+      AP_LOG_LEVEL: info
+    ports:
+      - "127.0.0.1:${W4_LOCAL_PORT:-8081}:80"
+    volumes:
+      - cache:/usr/src/app/cache
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  postgres:
+    image: pgvector/pgvector:0.8.0-pg14
+    restart: unless-stopped
+    env_file: .env.mit.local
+    environment:
+      POSTGRES_DB: w4_mit
+      POSTGRES_USER: w4
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD, pg_isready, -U, w4, -d, w4_mit]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+  redis:
+    image: redis:7.0.7
+    restart: unless-stopped
+    command: [redis-server, --appendonly, "yes"]
+    volumes:
+      - redis:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  postgres:
+  redis:
+  cache:

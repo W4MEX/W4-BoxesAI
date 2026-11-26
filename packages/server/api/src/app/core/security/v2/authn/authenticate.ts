@@ -1,0 +1,26 @@
+import { ActivepiecesError, ErrorCode, isNil } from '@activepieces/core-utils'
+import { Principal, PrincipalType } from '@activepieces/shared'
+import { FastifyBaseLogger } from 'fastify'
+import { nanoid } from 'nanoid'
+import { accessTokenManager } from '../../../../authentication/lib/access-token-manager'
+
+export const authenticateOrThrow = async (log: FastifyBaseLogger, rawToken: string | null): Promise<Principal> => {
+    if (!isNil(rawToken) && rawToken.startsWith('Bearer sk-')) {
+        const trimBearerPrefix = rawToken.replace('Bearer ', '')
+        return createPrincipalForApiKey(trimBearerPrefix)
+    }
+    if (!isNil(rawToken) && rawToken.startsWith('Bearer ')) {
+        const trimBearerPrefix = rawToken.replace('Bearer ', '')
+        return accessTokenManager(log).verifyPrincipal(trimBearerPrefix)
+    }
+    return {
+        id: nanoid(),
+        type: PrincipalType.UNKNOWN,
+    }
+}
+
+
+async function createPrincipalForApiKey(_apiKeyValue: string): Promise<never> {
+    throw new ActivepiecesError({ code: ErrorCode.AUTHENTICATION, params: { message: 'Service API keys are not enabled in W4' } })
+}
+

@@ -1,0 +1,47 @@
+name: W4 Verification
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: W4 verification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Source and updater checks
+        run: |
+          python3 deploy/w4/automation/audit_publication.py
+          python3 deploy/w4/automation/test_core_sync.py
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.1'
+      - name: Install pinned toolchain
+        run: |
+          npm install -g bun@1.4.4
+          test "$(bun --version)" = 1.4.4
+          bun install --frozen-lockfile --ignore-scripts
+      - name: Build API dependency workspaces
+        run: bunx --no-install turbo run build --filter='api^...' --concurrency=2
+      - name: Build and verify Community artifacts
+        run: |
+          bun run --cwd packages/web typecheck
+          W4_WEB_INVENTORY="$RUNNER_TEMP/w4-web-modules.json" bun run --cwd packages/web build
+          (
+            cd packages/server/api
+            bunx --no-install esbuild src/bootstrap.ts --bundle --platform=node --format=cjs --packages=external --tsconfig=tsconfig.app.json --target=node24 --outfile="$RUNNER_TEMP/w4-api.cjs" --metafile="$RUNNER_TEMP/w4-api.json"
+          )
+          python3 deploy/w4/automation/check_build.py "$RUNNER_TEMP/w4-api.json" "$RUNNER_TEMP/w4-web-modules.json"
+      - name: W4 role and tenant isolation policy
+        run: |
+          bunx --no-install esbuild packages/server/api/src/app/w4/access-policy.ts --platform=node --format=cjs --outfile=packages/server/api/dist/src/app/w4/access-policy.js
+          node --test deploy/w4/access-policy.test.cjs

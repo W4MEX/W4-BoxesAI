@@ -1,0 +1,3 @@
+name: w4-boxesai-mit
+include:
+  - path: ./deploy/w4/compose.mit.yaml

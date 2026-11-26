@@ -1,0 +1,27 @@
+Infraestructura inicial de W4-BoxesAI en DigitalOcean
+
+Esta configuración prepara un Droplet Ubuntu, una red privada y un firewall.
+No se ha aplicado. No se han contratado recursos ni configurado una cuenta.
+No instala todavía la aplicación ni implementa el aislamiento entre clientes.
+
+El ejemplo es una referencia de staging, no un presupuesto aprobado.
+La IP 192.0.2.10 es de documentación: reemplázala por la IP del administrador.
+Usa claves SSH ya registradas en tu propia cuenta de DigitalOcean.
+Configura DIGITALOCEAN_TOKEN en el entorno; no lo guardes en estos archivos.
+
+Antes de provisionar:
+1. Elegir región, tamaño, dominio y coste mensual concreto.
+2. Copiar terraform.tfvars.example a terraform.tfvars y completar sus valores.
+3. Ejecutar terraform init, terraform validate y terraform plan.
+4. Revisar los recursos y el coste del plan antes de ejecutar terraform apply.
+
+Los puertos públicos 80/443 están cerrados por defecto. Se habilitan al
+desplegar una versión probada con HTTPS y autorización entre organizaciones.
+PostgreSQL y Redis no requieren puertos públicos. Las copias del Droplet
+complementan los respaldos consistentes de PostgreSQL y una prueba de restauración.
+prevent_destroy protege contra un borrado accidental desde Terraform.
+
+Fuentes:
+https://registry.terraform.io/providers/digitalocean/digitalocean/latest/docs/resources/droplet
+https://registry.terraform.io/providers/digitalocean/digitalocean/latest/docs/resources/firewall
+https://www.digitalocean.com/pricing/droplets

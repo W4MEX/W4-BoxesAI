@@ -1,0 +1,28 @@
+name: Propose Activepieces core update
+on:
+  schedule:
+    - cron: '23 9 * * 2,5'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: activepieces-upstream-proposal
+  cancel-in-progress: false
+
+jobs:
+  propose:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: main
+      - name: Prepare review branch and draft pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash deploy/w4/automation/propose.sh

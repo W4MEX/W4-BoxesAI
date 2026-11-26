@@ -1,0 +1,4 @@
+The initial schema will be generated from the retained MIT entity definitions
+and the independent W4 membership entities against an empty PostgreSQL database.
+The versioned SQL must be reviewed and tested before the first deployment.
+Existing ActiveBoxes and vNext databases are not inputs to this initialization.

@@ -1,0 +1,36 @@
+W4-BOXESAI | PUBLICACIÓN Y MANTENIMIENTO
+
+Este historial independiente conserva el núcleo, los cambios W4 y las
+piezas seleccionadas. El resto de piezas comunitarias conserva solo
+manifiestos y avisos para resolver el lockfile. Los artefactos y datos
+locales quedan fuera del historial.
+
+Revisar el commit desde la carpeta W4-BoxesAI-publicacion.
+
+Para publicar, decidir propietario y visibilidad y crear un repositorio
+vacío. Desde la copia de revisión, configurar origin y subir main.
+Habilitar la creación de pull requests desde GitHub Actions. Las
+ejecuciones de PR creados con GITHUB_TOKEN pueden requerir aprobación.
+
+Proteger main con PR obligatorio, una aprobación humana, invalidación de
+reseñas anteriores y el check W4 verification. Prohibir force push y
+borrado. Si el plan admite la protección, el administrador puede usar:
+  gh api --method PUT repos/OWNER/REPO/branches/main/protection --input deploy/w4/automation/branch-protection.json
+
+Para cada candidato, el workflow revisa dos veces por semana la última
+publicación estable. Compara dos archivos fuente por SHA, incorpora solo
+el núcleo autorizado y abre un PR borrador. Conserva modificaciones W4
+en conflictos y los registra en upstream-proposal.json. Cambios de aviso
+o declaración de licencia impiden importar código automáticamente.
+La tarea que escribe el PR no ejecuta código de la versión candidata.
+
+Reconciliar manualmente conflictos y dependencias. Revisar el LICENSE, el
+commit y los avisos, actualizar upstream.json y quitar el marcador de
+propuesta. La verificación falla con un marcador pendiente. Fusionar
+solo después de revisión y comprobaciones aprobadas.
+
+Verificación de fuente: rutas prohibidas, patrones de credenciales, pruebas
+del sincronizador, instalación congelada, compilación API/web, inventarios
+de compilación y pruebas de política W4. Ejecución completa en GitHub
+pendiente. Para distribución de una imagen, verificar migraciones con
+copia de base, worker, navegador, tráfico y avisos de terceros.

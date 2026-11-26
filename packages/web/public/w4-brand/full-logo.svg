@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" role="img" aria-label="W4-BoxesAI">
+  <rect width="300" height="64" rx="14" fill="#102b25"/>
+  <path d="M15 17h13v13H15zM35 17h13v13H35zM25 39h13v10H25z" fill="none" stroke="#6ee7b7" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M21.5 30v6h20v-6M31.5 36v3" fill="none" stroke="#6ee7b7" stroke-width="2.5"/>
+  <text x="67" y="40" fill="#f2fbf7" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700" letter-spacing="-.6">W4-BoxesAI</text>
+</svg>

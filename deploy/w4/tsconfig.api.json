@@ -1,0 +1,6 @@
+{
+  "extends": "../../packages/server/api/tsconfig.app.json",
+  "compilerOptions": { "noEmit": true },
+  "include": ["../../packages/server/api/src/bootstrap.ts", "../../packages/server/api/src/main.ts", "../../packages/server/api/types/**/*.d.ts"],
+  "exclude": []
+}

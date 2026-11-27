@@ -1,5 +1,5 @@
 import { ActivepiecesError, apId, assertEqual, assertNotNullOrUndefined, ErrorCode, isNil, ProjectRole, RoleType, SeekPage, spreadIfDefined, unique } from '@activepieces/core-utils'
-import { ApEdition, InvitationStatus, InvitationType, PlatformRole, RemoveProjectFromInvitationResponse, TelemetryEventName, UserInvitation, UserInvitationWithLink } from '@activepieces/shared'
+import { ApEdition, InvitationStatus, InvitationType, PlatformRole, RemoveProjectFromInvitationResponse, TelemetryEventName, UserInvitation, UserInvitationPreview, UserInvitationWithLink } from '@activepieces/shared'
 import dayjs from 'dayjs'
 import { FastifyBaseLogger } from 'fastify'
 import { EntityManager, In, IsNull, ObjectLiteral, SelectQueryBuilder } from 'typeorm'
@@ -45,6 +45,18 @@ export const userInvitationsService = (log: FastifyBaseLogger) => ({
             })
         }
         return invitation
+    },
+    async getPreviewByInvitationToken(token: string): Promise<UserInvitationPreview> {
+        const invitation = await this.getOneByInvitationTokenOrThrow(token)
+        const platform = await platformService(log).getOneOrThrow(invitation.platformId)
+        const memberCount = await userService(log).countActiveByPlatformId({ platformId: platform.id })
+        return {
+            email: invitation.email,
+            platformName: platform.name,
+            platformLogoUrl: null,
+            memberCount,
+            status: invitation.status,
+        }
     },
     async provisionUserInvitation({ email }: ProvisionUserInvitationParams): Promise<void> {
         const invitations = await repo().createQueryBuilder('user_invitation')

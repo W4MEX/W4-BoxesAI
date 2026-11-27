@@ -265,6 +265,7 @@ function ProjectsGroup() {
         </div>
         <SidebarMenu
           ref={listRef}
+          data-testid="rail-projects"
           className={cn(
             'min-h-0 flex-1 gap-0.5',
             sidebarStyles.scrollArea,

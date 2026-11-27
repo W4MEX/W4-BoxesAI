@@ -32,6 +32,8 @@ const HomeButton = () => {
               <Button
                 variant="ghost"
                 size={showBackButton ? 'icon-sm' : 'icon-lg'}
+                aria-label={t('Go to Dashboard')}
+                data-testid="builder-home-button"
               >
                 {!showBackButton && (
                   <img

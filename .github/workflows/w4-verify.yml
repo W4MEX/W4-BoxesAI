@@ -32,10 +32,15 @@ jobs:
           bun install --frozen-lockfile --ignore-scripts
       - name: Build API dependency workspaces
         run: bunx --no-install turbo run build --filter='api^...' --concurrency=2
-      - name: Build and verify Community artifacts
+      - name: Type-check Community web
+        timeout-minutes: 10
+        run: bun run --cwd packages/web typecheck
+      - name: Build Community web
+        timeout-minutes: 10
+        run: W4_WEB_INVENTORY="$RUNNER_TEMP/w4-web-modules.json" bun run --cwd packages/web build
+      - name: Build Community API and verify artifact inventories
+        timeout-minutes: 5
         run: |
-          bun run --cwd packages/web typecheck
-          W4_WEB_INVENTORY="$RUNNER_TEMP/w4-web-modules.json" bun run --cwd packages/web build
           (
             cd packages/server/api
             bunx --no-install esbuild src/bootstrap.ts --bundle --platform=node --format=cjs --packages=external --tsconfig=tsconfig.app.json --target=node24 --outfile="$RUNNER_TEMP/w4-api.cjs" --metafile="$RUNNER_TEMP/w4-api.json"

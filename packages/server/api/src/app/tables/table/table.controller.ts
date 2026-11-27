@@ -5,7 +5,7 @@ import { StatusCodes } from 'http-status-codes'
 import { z } from 'zod'
 import { ProjectResourceType } from '../../core/security/authorization/common'
 import { securityAccess } from '../../core/security/authorization/fastify-security'
-
+import { editorSession } from '../../flows/flow/editor-session'
 import { userService } from '../../user/user-service'
 import { recordSideEffects } from '../record/record-side-effects'
 import { recordService } from '../record/record.service'
@@ -28,6 +28,7 @@ export const tablesController: FastifyPluginAsyncZod = async (fastify) => {
             projectId: request.projectId,
             id: request.params.id,
             request: request.body,
+            editorSessionId: editorSession.idFromRequest(request),
         })
 
     })
@@ -65,6 +66,7 @@ export const tablesController: FastifyPluginAsyncZod = async (fastify) => {
         await tableService.delete({
             projectId: request.projectId,
             id: request.params.id,
+            editorSessionId: editorSession.idFromRequest(request),
         })
         await reply.status(StatusCodes.NO_CONTENT).send()
     })

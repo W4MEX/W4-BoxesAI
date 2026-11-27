@@ -112,7 +112,7 @@ const ConfigurationsContent = ({
           }
         >
           <ConfigurationsHeader />
-          <TelemetrySection control={form.control} disabled={isPending} />
+          <TelemetrySection />
         </AdminPage>
       </form>
     </Form>
@@ -134,7 +134,7 @@ const ConfigurationsSkeleton = () => {
         <SettingsPanel
           title={t('Telemetry')}
           description={t(
-            'Help us improve Activepieces. We never receive what your flows do, the data they process, or anything inside your connections and API keys.',
+            'External telemetry is disabled in W4-BoxesAI.',
           )}
           flush
         >

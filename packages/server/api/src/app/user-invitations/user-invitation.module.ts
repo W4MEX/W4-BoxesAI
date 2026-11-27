@@ -1,5 +1,5 @@
 import { ActivepiecesError, assertNotNullOrUndefined, ErrorCode, isNil, Permission, ProjectRole, RoleType, SeekPage } from '@activepieces/core-utils'
-import { ApplicationEventName, InvitationStatus, InvitationType, ListUserInvitationsRequest, PlatformRole, Principal, PrincipalType, ProjectType, RemoveProjectFromInvitationResponse, SendUserInvitationRequest, SERVICE_KEY_SECURITY_OPENAPI, TelemetryEvent, TelemetryEventName, UserInvitation, UserInvitationEvent, UserInvitationWithLink } from '@activepieces/shared'
+import { ApplicationEventName, InvitationStatus, InvitationType, ListUserInvitationsRequest, PlatformRole, Principal, PrincipalType, ProjectType, RemoveProjectFromInvitationResponse, SendUserInvitationRequest, SERVICE_KEY_SECURITY_OPENAPI, TelemetryEvent, TelemetryEventName, UserInvitation, UserInvitationEvent, UserInvitationPreview, UserInvitationWithLink } from '@activepieces/shared'
 import { FastifyBaseLogger, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod'
 import { StatusCodes } from 'http-status-codes'
@@ -8,6 +8,7 @@ import { userIdentityService } from '../authentication/user-identity/user-identi
 import { transaction } from '../core/db/transaction'
 import { ProjectResourceType } from '../core/security/authorization/common'
 import { securityAccess } from '../core/security/authorization/fastify-security'
+import { authnRateLimit } from '../core/security/rate-limit'
 import { distributedLock } from '../database/redis-connections'
 import { applicationEvents, MetaInformation } from '../helper/application-events'
 import { networkUtils } from '../helper/network-utils'
@@ -115,6 +116,14 @@ const invitationController: FastifyPluginAsyncZod = async (app) => {
         })
         await reply.status(StatusCodes.OK).send(invitations)
     })
+
+    app.get('/preview', {
+        config: { security: securityAccess.public(), rateLimit: authnRateLimit },
+        schema: {
+            querystring: z.object({ token: z.string() }),
+            response: { [StatusCodes.OK]: UserInvitationPreview },
+        },
+    }, async (request) => userInvitationsService(request.log).getPreviewByInvitationToken(request.query.token))
 
     app.post('/accept', AcceptUserInvitationRequestParams, async (request, reply) => {
         const invitation = await userInvitationsService(request.log).getOneByInvitationTokenOrThrow(request.body.invitationToken)
@@ -347,6 +356,7 @@ const ListUserInvitationsRequestParams = {
 const AcceptUserInvitationRequestParams = {
     config: {
         security: securityAccess.public(),
+        rateLimit: authnRateLimit,
     },
     schema: {
         body: z.object({

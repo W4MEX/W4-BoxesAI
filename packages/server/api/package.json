@@ -4,6 +4,7 @@
   "private": true,
   "type": "commonjs",
   "dependencies": {
+    "@activepieces/ai-providers": "workspace:*",
     "@activepieces/core-execution": "workspace:*",
     "@activepieces/core-formula": "workspace:*",
     "@activepieces/core-piece-types": "workspace:*",

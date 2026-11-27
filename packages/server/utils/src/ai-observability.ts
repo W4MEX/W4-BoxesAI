@@ -5,7 +5,7 @@ export const aiObservability = {
     integration: (): undefined => undefined,
     flush: async (): Promise<void> => undefined,
     reset: (): void => undefined,
-    runtimeContextOf: (_options: { billing?: ActivepiecesAiBilling }): AiTraceContext => ({}),
+    runtimeContextOf: (_options: { billing?: ActivepiecesAiBilling, functionId?: string }): AiTraceContext => ({}),
 }
 
 export const AI_TRACE_RUNTIME_CONTEXT = { distinctId: true, sessionId: true, groups: true }
